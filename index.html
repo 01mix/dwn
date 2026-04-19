@@ -56,18 +56,27 @@
         }
 
         const order = getQueryParam('order');
-        const email = getQueryParam('email');
+        const token = getQueryParam('token');
+        const email = getQueryParam('email'); // legado / fallback temporário
         const refresh = getQueryParam('refresh'); // Captura o parâmetro refresh
         
         // ID da sua Web App
         const webAppId = 'AKfycbz-APd8deX2raVDW5HXix3n1jvqQjFOM8FA3dcrLutaxzyj0_OiitfPtBlOaWNaU2v3';
         
-        if (order && email) {
-            // Constrói a URL do Apps Script com o parâmetro refresh, se presente
-            let urlAppsScript = `https://script.google.com/macros/s/${webAppId}/exec?order=${encodeURIComponent(order)}&email=${encodeURIComponent(email)}`;
+        if (order && (token || email)) {
+            // Prioriza token; mantém email como fallback temporário
+            let urlAppsScript = `https://script.google.com/macros/s/${webAppId}/exec?order=${encodeURIComponent(order)}`;
+        
+            if (token) {
+                urlAppsScript += `&token=${encodeURIComponent(token)}`;
+            } else {
+                urlAppsScript += `&email=${encodeURIComponent(email)}`;
+            }
+        
             if (refresh) {
                 urlAppsScript += `&refresh=${encodeURIComponent(refresh)}`;
             }
+        
             const iframe = document.getElementById('appsScriptFrame');
             iframe.src = urlAppsScript;
             
