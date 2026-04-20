@@ -54,46 +54,31 @@
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(param);
         }
-
-        const order = getQueryParam('order');
-        const token = getQueryParam('token');
-        const email = getQueryParam('email'); // legado / fallback temporário
-        const refresh = getQueryParam('refresh'); // Captura o parâmetro refresh
-        
+    
+        const order = getQueryParam('o');
+        const token = getQueryParam('k');
+    
         // ID da sua Web App
         const webAppId = 'AKfycbz-APd8deX2raVDW5HXix3n1jvqQjFOM8FA3dcrLutaxzyj0_OiitfPtBlOaWNaU2v3';
-        
-        if (order && (token || email)) {
-            // Prioriza token; mantém email como fallback temporário
-            let urlAppsScript = `https://script.google.com/macros/s/${webAppId}/exec?order=${encodeURIComponent(order)}`;
-        
-            if (token) {
-                urlAppsScript += `&token=${encodeURIComponent(token)}`;
-            } else {
-                urlAppsScript += `&email=${encodeURIComponent(email)}`;
-            }
-        
-            if (refresh) {
-                urlAppsScript += `&refresh=${encodeURIComponent(refresh)}`;
-            }
-        
+    
+        if (order && token) {
+            const urlAppsScript =
+                `https://script.google.com/macros/s/${webAppId}/exec?o=${encodeURIComponent(order)}&k=${encodeURIComponent(token)}`;
+    
             const iframe = document.getElementById('appsScriptFrame');
             iframe.src = urlAppsScript;
-            
-            // Quando o iframe carregar, esconde o loading e mostra o iframe
+    
             iframe.onload = function() {
                 document.getElementById('loading').style.display = 'none';
                 iframe.style.display = 'block';
             };
-            
-            // Script para redimensionar o iframe com base na altura da página filha
+    
             window.addEventListener('message', function(event) {
                 if (event.data.height) {
                     iframe.style.height = event.data.height + 'px';
                 }
             });
         } else {
-            // Exibe uma mensagem de erro se os parâmetros estiverem faltando
             document.getElementById('loading').style.display = 'none';
             document.body.innerHTML = '<h1>Erro: Parâmetros faltando.</h1>';
         }
